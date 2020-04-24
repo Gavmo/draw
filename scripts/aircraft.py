@@ -4,10 +4,11 @@ import csv
 
 
 class Aircraft:
-    def __init__(self, dep_port, arr_port, dep_datetime, arr_datetime):
+    def __init__(self, dep_port, arr_port, dep_datetime, arr_datetime, debug=False):
         self.position = (0, 0)
         self.dep_datetime = dep_datetime
         self.arr_datetime = arr_datetime
+        self.active = False
         # with open('../apdata/airports.json', 'r') as rawjson:
         #     ap = json.load(rawjson)
         #     self.dep_port = (ap[dep_port]['lat'], ap[dep_port]['lon'])
@@ -21,24 +22,41 @@ class Aircraft:
                 # print(row)
                 if row[13] == dep_port:
                     potential_dep.append(row)
-                    print(row)
+                    self.dep_port = (float(row[4]), float(row[5]))
                 if row[13] == arr_port:
                     potential_arr.append(row)
-            if len(potential_arr) > 0:
-                for each in potential_arr:
-                    if each[8] == 'AU':
-                        self.arr_port = (float(each[4]), float(each[5]))
-                        break
-            if len(potential_dep) > 0:
-                for each in potential_dep:
-                    if each[8] == 'AU':
-                        self.dep_port = (float(each[4]), float(each[5]))
-                        break
+                    self.arr_port = (float(row[4]), float(row[5]))
+            # if len(potential_arr) > 1:
+            #     for each in potential_arr:
+            #         if each[8] == 'AU':
+            #             self.arr_port = (float(each[4]), float(each[5]))
+            #             break
+            # if len(potential_dep) > 1:
+            #     for each in potential_dep:
+            #         if each[8] == 'AU':
+            #             self.dep_port = (float(each[4]), float(each[5]))
+            #             break
+        if debug:
+            print(dep_port)
+            print(arr_port)
+            print(self.arr_port)
+            print(self.dep_port)
+            print(dep_datetime)
+            print(arr_datetime)
 
     def progress(self, timestamp):
+        if timestamp < self.dep_datetime:
+            self.active = False
+        else:
+            self.active = True
         delta_now = self.arr_datetime - timestamp
         duration = self.arr_datetime - self.dep_datetime
         return delta_now / duration
+
+    def is_finished(self, timestamp):
+        if timestamp > self.arr_datetime:
+            print("FIN")
+            return True
 
     def update_position(self, timestamp):
         progress_ratio = self.progress(timestamp)
