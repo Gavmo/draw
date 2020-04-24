@@ -46,6 +46,7 @@ def import_coords(gisfile):
 
 def dms_to_pix(coord, window, bounding):
     """Convert coordinates to pygame coordinate within the spatial boundary"""
+    # print(coord)
     delta_lat = float(bounding[0][0]) - float(bounding[1][0])
     delta_lon = float(bounding[0][1]) - float(bounding[1][1])
     lat_ratio = 1 / (delta_lat / window[1])
@@ -64,21 +65,24 @@ class OzMap:
         self.mapcanvas.fill((255, 255, 255))
         pygame.display.update()
         pygame.display.set_caption("BORK BORK BORK")
-        sleep(1)
+        # sleep(1)
         self.mapcanvas.fill((0, 0, 0))
         pygame.display.update()
-        sleep(1)
+        # sleep(1)
         self.drawoz(outline, boundings)
 
     def drawoz(self, oz, bounds):
         for ranges in oz:
-            pen = (randint(0, 255), randint(0, 255), randint(0, 255))
+            pen = (255, 255, 255)
             for point in range(0, len(ranges)):
                 from_point = dms_to_pix(ranges[point], window_size, bounds)
                 to_point = dms_to_pix(ranges[point - 1], window_size, bounds)
                 pygame.draw.line(self.mapcanvas, pen, from_point, to_point, 1)
-                pygame.display.update()
-        sleep(10)
+        pygame.display.update()
+        # sleep(1)
+
+    def draw_change(self):
+        pygame.display.update()
 
 
 if __name__ == "__main__":

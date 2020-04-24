@@ -1,5 +1,6 @@
 import json
 import time
+import csv
 
 
 class Aircraft:
@@ -7,11 +8,32 @@ class Aircraft:
         self.position = (0, 0)
         self.dep_datetime = dep_datetime
         self.arr_datetime = arr_datetime
-        with open('../apdata/airports.json', 'r') as rawjson:
-            ap = json.load(rawjson)
-            self.dep_port = (ap[dep_port]['lat'], ap[dep_port]['lon'])
-            self.arr_port = (ap[arr_port]['lat'], ap[arr_port]['lon'])
-            self.position = self.dep_port
+        # with open('../apdata/airports.json', 'r') as rawjson:
+        #     ap = json.load(rawjson)
+        #     self.dep_port = (ap[dep_port]['lat'], ap[dep_port]['lon'])
+        #     self.arr_port = (ap[arr_port]['lat'], ap[arr_port]['lon'])
+        #     self.position = self.dep_port
+        with open('../apdata/airports.csv', 'r', encoding='utf-8') as airport_raw:
+            airport_csv = csv.reader(airport_raw)
+            potential_dep = []
+            potential_arr = []
+            for row in airport_csv:
+                # print(row)
+                if row[13] == dep_port:
+                    potential_dep.append(row)
+                    print(row)
+                if row[13] == arr_port:
+                    potential_arr.append(row)
+            if len(potential_arr) > 0:
+                for each in potential_arr:
+                    if each[8] == 'AU':
+                        self.arr_port = (float(each[4]), float(each[5]))
+                        break
+            if len(potential_dep) > 0:
+                for each in potential_dep:
+                    if each[8] == 'AU':
+                        self.dep_port = (float(each[4]), float(each[5]))
+                        break
 
     def progress(self, timestamp):
         delta_now = self.arr_datetime - timestamp
@@ -33,5 +55,6 @@ if __name__ == "__main__":
     while simulated_time < 1587717300:
         ac.update_position(simulated_time)
         print(ac.position)
-        time.sleep(3)
-        simulated_time += 3
+        time.sleep(1)
+        simulated_time += 60
+
