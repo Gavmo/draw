@@ -30,9 +30,16 @@ class Aircraft:
             self.active = False
         else:
             self.active = True
-        delta_now = self.arr_datetime - timestamp
-        duration = self.arr_datetime - self.dep_datetime
-        return delta_now / duration
+        if self.active:
+            delta_now = self.arr_datetime - timestamp
+            duration = self.arr_datetime - self.dep_datetime
+            try:
+                return delta_now / duration
+            except ZeroDivisionError as e:
+                print(self.arr_datetime)
+                print(self.dep_datetime)
+        else:
+            return False
 
     def is_finished(self, timestamp):
         if timestamp > self.arr_datetime:
@@ -40,11 +47,12 @@ class Aircraft:
 
     def update_position(self, timestamp):
         progress_ratio = self.progress(timestamp)
-        delta_lat = self.dep_port[0] - self.arr_port[0]
-        prog_lat = delta_lat * progress_ratio
-        delta_lon = self.dep_port[1] - self.arr_port[1]
-        prog_lon = delta_lon * progress_ratio
-        self.position = (prog_lat + self.arr_port[0], prog_lon + self.arr_port[1])
+        if progress_ratio is not False:
+            delta_lat = self.dep_port[0] - self.arr_port[0]
+            prog_lat = delta_lat * progress_ratio
+            delta_lon = self.dep_port[1] - self.arr_port[1]
+            prog_lon = delta_lon * progress_ratio
+            self.position = (prog_lat + self.arr_port[0], prog_lon + self.arr_port[1])
 
 
 if __name__ == "__main__":

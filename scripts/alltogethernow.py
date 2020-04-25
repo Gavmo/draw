@@ -1,4 +1,5 @@
 import time
+import re
 import map
 import csv
 import datetime
@@ -18,11 +19,20 @@ if __name__ == "__main__":
     aclist = []
     flex_start = 0
     flex_finish = 0
-    with open('../flight_data/last_year.csv', 'r') as flight_raw:
+    date_regexp = re.compile(r'\d{1,2}\/\d{1,2}\/\d{4}\s\d{1,2}:\d{1,2}:\d{2}\s(?:A|P)M')
+    with open('../flight_data/a_years_worth.csv', 'r') as flight_raw:
         flightcsv = csv.reader(flight_raw)
         header = next(flightcsv)
         for row in flightcsv:
             if header is not None:
+                if not re.match(date_regexp, row[3]):
+                    continue
+                if not re.match(date_regexp, row[4]):
+                    continue
+                if 'XXX' in row[7:8]:
+                    continue
+                if row[3] == row[4]:
+                    continue
                 aclist.append(Aircraft(row[8],
                               row[7],
                               time.mktime(datetime.datetime.strptime(row[3], "%d/%m/%Y %I:%M:%S %p").timetuple()),
@@ -51,7 +61,7 @@ if __name__ == "__main__":
                                  (255, 0, 0)
                                  )
         date_rect = human_time.get_rect()
-        date_rect.center = (400, 10)
+        date_rect.center = (400, 20)
         ac_remaining = font.render(str(len(aclist)),
                                    True,
                                    (255, 0, 0)
@@ -67,6 +77,6 @@ if __name__ == "__main__":
         base.mapcanvas.blit(human_time, date_rect)
         base.mapcanvas.blit(ac_remaining, ac_rem_rect)
         base.draw_change()
-        simulated_time += 30
+        simulated_time += 120
     base.mapcanvas.fill((0, 0, 0))
     base.drawoz([gisdata[1][34], gisdata[1][194]], ((-2, 105), (-40, 165)))
