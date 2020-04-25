@@ -27,7 +27,9 @@ if __name__ == "__main__":
         # aclist = [ac, ac2, ac3, ac4]
     dot = AcIcon()
     aclist = []
-    with open('../flight_data/this_year.csv', 'r') as flight_raw:
+    flex_start = 0
+    flex_finish = 0
+    with open('../flight_data/last_year.csv', 'r') as flight_raw:
         flightcsv = csv.reader(flight_raw)
         header = next(flightcsv)
         for row in flightcsv:
@@ -39,8 +41,18 @@ if __name__ == "__main__":
                               time.mktime(datetime.datetime.strptime(row[4], "%d/%m/%Y %I:%M:%S %p").timetuple()),
                               debug=False)
                               )
+                if flex_start == 0:
+                    flex_start = datetime.datetime.strptime(row[3], "%d/%m/%Y %I:%M:%S %p").timestamp()
+                    flex_end = datetime.datetime.strptime(row[4], "%d/%m/%Y %I:%M:%S %p").timestamp()
+                else:
+                    if datetime.datetime.strptime(row[3], "%d/%m/%Y %I:%M:%S %p").timestamp() < flex_start:
+                        flex_start = datetime.datetime.strptime(row[3], "%d/%m/%Y %I:%M:%S %p").timestamp()
+                    if datetime.datetime.strptime(row[4], "%d/%m/%Y %I:%M:%S %p").timestamp() > flex_end:
+                        flex_end = datetime.datetime.strptime(row[4], "%d/%m/%Y %I:%M:%S %p").timestamp()
             print(len(aclist))
     base = map.OzMap([gisdata[1][34], gisdata[1][194]], bounds)
+    simulated_time = flex_start
+    finish = flex_end
     while simulated_time < finish:
         pygame.event.get()
         base.mapcanvas.fill((0, 0, 0))
