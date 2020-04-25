@@ -4,7 +4,9 @@ import map
 import csv
 import datetime
 from aircraft import Aircraft
+from flight_data_ingest import FlightData
 from acicon import AcIcon
+from eventbox import EventBox
 import pygame
 
 
@@ -13,50 +15,39 @@ def reverse_tuple(tup):
 
 
 if __name__ == "__main__":
+    print("Importing map")
     gisdata = map.import_coords(r'..//GIS/aus10cgd_r.mif')
     bounds = ((-2, 105), (-40, 165))
+    print("Spawnning aircraft")
     dot = AcIcon()
-    aclist = []
-    flex_start = 0
-    flex_finish = 0
-    date_regexp = re.compile(r'\d{1,2}\/\d{1,2}\/\d{4}\s\d{1,2}:\d{1,2}:\d{2}\s(?:A|P)M')
-    with open('../flight_data/a_years_worth.csv', 'r') as flight_raw:
-        flightcsv = csv.reader(flight_raw)
-        header = next(flightcsv)
-        for row in flightcsv:
-            if header is not None:
-                if not re.match(date_regexp, row[3]):
-                    continue
-                if not re.match(date_regexp, row[4]):
-                    continue
-                if 'XXX' in row[7:8]:
-                    continue
-                if row[3] == row[4]:
-                    continue
-                aclist.append(Aircraft(row[8],
-                              row[7],
-                              time.mktime(datetime.datetime.strptime(row[3], "%d/%m/%Y %I:%M:%S %p").timetuple()),
-                              time.mktime(datetime.datetime.strptime(row[4], "%d/%m/%Y %I:%M:%S %p").timetuple()),
-                              debug=False)
-                              )
-                if flex_start == 0:
-                    flex_start = datetime.datetime.strptime(row[3], "%d/%m/%Y %I:%M:%S %p").timestamp()
-                    flex_end = datetime.datetime.strptime(row[4], "%d/%m/%Y %I:%M:%S %p").timestamp()
-                else:
-                    if datetime.datetime.strptime(row[3], "%d/%m/%Y %I:%M:%S %p").timestamp() < flex_start:
-                        flex_start = datetime.datetime.strptime(row[3], "%d/%m/%Y %I:%M:%S %p").timestamp()
-                    if datetime.datetime.strptime(row[4], "%d/%m/%Y %I:%M:%S %p").timestamp() > flex_end:
-                        flex_end = datetime.datetime.strptime(row[4], "%d/%m/%Y %I:%M:%S %p").timestamp()
+    # eb = EventBox('../event_data/events.csv', (10000, 80))
+    print("importing Flight Data")
+    # flight_data = FlightData('../flight_data/this_year.csv')
+    # flight_data = FlightData('../flight_data/last_year.csv')
+    flight_data = FlightData('../flight_data/a_years_worth.csv', fromdate='09/03/2020')
+    aclist = flight_data.aclist
+    print("Drawing Map")
     base = map.OzMap([gisdata[1][34], gisdata[1][194]], bounds)
-    simulated_time = flex_start
-    finish = flex_end
+    simulated_time = flight_data.flex_start
+    # print(datetime.datetime.utcfromtimestamp(simulated_time).strftime('%Y-%m-%d %H:%M:%S'))
+    finish = flight_data.flex_end
+    itemqueue = []
+    for countdown in range(10):
+        print(countdown)
+        time.sleep(1)
     while simulated_time < finish:
+        if len(aclist) < 500:
+            itemqueue.extend(aclist)
+            aclist = []
+        else:
+            while len(itemqueue) < 500:
+                itemqueue.append(aclist.pop(0))
         pygame.event.get()
         base.mapcanvas.fill((0, 0, 0))
         base.drawoz([gisdata[1][34], gisdata[1][194]], ((-2, 105), (-40, 165)))
         cleanup = []
         font = pygame.font.Font('freesansbold.ttf', 20)
-        human_time = font.render(datetime.datetime.utcfromtimestamp(simulated_time).strftime('%Y-%m-%d %H:%M'),
+        human_time = font.render(datetime.datetime.utcfromtimestamp(simulated_time).strftime('%Y-%m-%d %H:%M:%S'),
                                  True,
                                  (255, 0, 0)
                                  )
@@ -68,15 +59,25 @@ if __name__ == "__main__":
                                    )
         ac_rem_rect = ac_remaining.get_rect()
         ac_rem_rect.center = (100, 100)
-        for each in aclist:
+        iq_remaining = font.render('Item Queue: {}'.format(len(itemqueue)),
+                                   True,
+                                   (255, 0, 0)
+                                   )
+        iq_rem_rect = iq_remaining.get_rect()
+        iq_rem_rect.center = (100, 120)
+        for each in itemqueue:
             if each.active:
                 base.mapcanvas.blit(dot.image, map.dms_to_pix(reverse_tuple(each.position), map.window_size, bounds))
             each.update_position(simulated_time)
             if each.is_finished(simulated_time):
-                cleanup.append(aclist.pop(aclist.index(each)))
+                cleanup.append(itemqueue.pop(itemqueue.index(each)))
         base.mapcanvas.blit(human_time, date_rect)
         base.mapcanvas.blit(ac_remaining, ac_rem_rect)
+        base.mapcanvas.blit(iq_remaining, iq_rem_rect)
+        # base.mapcanvas.blit(*eb.draw_events(simulated_time))
         base.draw_change()
-        simulated_time += 120
+        simulated_time += 1500
+
     base.mapcanvas.fill((0, 0, 0))
     base.drawoz([gisdata[1][34], gisdata[1][194]], ((-2, 105), (-40, 165)))
+    time.sleep(5)

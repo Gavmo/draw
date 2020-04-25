@@ -1,4 +1,5 @@
 import time
+import datetime
 import csv
 
 with open('../apdata/airports.csv', 'r', encoding='utf-8') as airport_raw:
@@ -24,6 +25,10 @@ class Aircraft:
             print(self.dep_port)
             print(dep_datetime)
             print(arr_datetime)
+
+    def human_dep_date(self):
+        """Return a human date for debug"""
+        return datetime.datetime.utcfromtimestamp(self.dep_datetime).strftime('%Y-%m-%d %H:%M:%S')
 
     def progress(self, timestamp):
         if timestamp < self.dep_datetime:
