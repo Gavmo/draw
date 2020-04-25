@@ -55,7 +55,6 @@ class Aircraft:
 
     def is_finished(self, timestamp):
         if timestamp > self.arr_datetime:
-            print("FIN")
             return True
 
     def update_position(self, timestamp):
