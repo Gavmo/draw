@@ -14,17 +14,6 @@ def reverse_tuple(tup):
 if __name__ == "__main__":
     gisdata = map.import_coords(r'..//GIS/aus10cgd_r.mif')
     bounds = ((-2, 105), (-40, 165))
-    # start = datetime.datetime.strptime("22/04/2020 12:00:00 AM", "%d/%m/%Y %I:%M:%S %p").timestamp()
-    # finish = datetime.datetime.strptime("25/04/2020 12:00:00 AM", "%d/%m/%Y %I:%M:%S %p").timestamp()
-    start = datetime.datetime.strptime("23/04/2020 12:00:00 AM", "%d/%m/%Y %I:%M:%S %p").timestamp()
-    finish = datetime.datetime.strptime("25/04/2020 02:00:00 AM", "%d/%m/%Y %I:%M:%S %p").timestamp()
-    print(datetime.datetime.strptime("23/04/2019 12:00:00 AM", "%d/%m/%Y %I:%M:%S %p").timestamp())
-    # ac = Aircraft('BNE', 'SYD', 1587711600, 1587717300)
-    # ac2 = Aircraft('SYD', 'BNE', 1587711600, 1587717300)
-    # ac3 = Aircraft('MEL', 'SYD', 1587711600, 1587717300)
-    # ac4 = Aircraft('PER', 'SYD', 1587711600, 1587717300)
-    simulated_time = start
-        # aclist = [ac, ac2, ac3, ac4]
     dot = AcIcon()
     aclist = []
     flex_start = 0
@@ -33,7 +22,6 @@ if __name__ == "__main__":
         flightcsv = csv.reader(flight_raw)
         header = next(flightcsv)
         for row in flightcsv:
-
             if header is not None:
                 aclist.append(Aircraft(row[8],
                               row[7],
@@ -49,7 +37,6 @@ if __name__ == "__main__":
                         flex_start = datetime.datetime.strptime(row[3], "%d/%m/%Y %I:%M:%S %p").timestamp()
                     if datetime.datetime.strptime(row[4], "%d/%m/%Y %I:%M:%S %p").timestamp() > flex_end:
                         flex_end = datetime.datetime.strptime(row[4], "%d/%m/%Y %I:%M:%S %p").timestamp()
-            print(len(aclist))
     base = map.OzMap([gisdata[1][34], gisdata[1][194]], bounds)
     simulated_time = flex_start
     finish = flex_end
@@ -59,11 +46,12 @@ if __name__ == "__main__":
         base.drawoz([gisdata[1][34], gisdata[1][194]], ((-2, 105), (-40, 165)))
         cleanup = []
         font = pygame.font.Font('freesansbold.ttf', 20)
-        human_time = font.render(datetime.datetime.utcfromtimestamp(simulated_time).strftime('%Y-%m-%d %H:%M:%S'),
+        human_time = font.render(datetime.datetime.utcfromtimestamp(simulated_time).strftime('%Y-%m-%d %H:%M'),
                                  True,
                                  (255, 0, 0)
                                  )
         date_rect = human_time.get_rect()
+        date_rect.center = (400, 10)
         ac_remaining = font.render(str(len(aclist)),
                                    True,
                                    (255, 0, 0)
@@ -76,14 +64,9 @@ if __name__ == "__main__":
             each.update_position(simulated_time)
             if each.is_finished(simulated_time):
                 cleanup.append(aclist.pop(aclist.index(each)))
-        # print(pos)
-        # ac.update_position(simulated_time)
         base.mapcanvas.blit(human_time, date_rect)
         base.mapcanvas.blit(ac_remaining, ac_rem_rect)
         base.draw_change()
-        # print(ac.position)
-        # time.sleep(1)
-        simulated_time += 60
+        simulated_time += 30
     base.mapcanvas.fill((0, 0, 0))
     base.drawoz([gisdata[1][34], gisdata[1][194]], ((-2, 105), (-40, 165)))
-

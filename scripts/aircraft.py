@@ -1,6 +1,12 @@
-import json
 import time
 import csv
+
+with open('../apdata/airports.csv', 'r', encoding='utf-8') as airport_raw:
+    airport_csv = csv.reader(airport_raw)
+    next(airport_csv)
+    thedict = {}
+    for row in airport_csv:
+        thedict[row[13]] = (float(row[4]), float(row[5]))
 
 
 class Aircraft:
@@ -9,33 +15,8 @@ class Aircraft:
         self.dep_datetime = dep_datetime
         self.arr_datetime = arr_datetime
         self.active = False
-        # with open('../apdata/airports.json', 'r') as rawjson:
-        #     ap = json.load(rawjson)
-        #     self.dep_port = (ap[dep_port]['lat'], ap[dep_port]['lon'])
-        #     self.arr_port = (ap[arr_port]['lat'], ap[arr_port]['lon'])
-        #     self.position = self.dep_port
-        with open('../apdata/airports.csv', 'r', encoding='utf-8') as airport_raw:
-            airport_csv = csv.reader(airport_raw)
-            potential_dep = []
-            potential_arr = []
-            for row in airport_csv:
-                # print(row)
-                if row[13] == dep_port:
-                    potential_dep.append(row)
-                    self.dep_port = (float(row[4]), float(row[5]))
-                if row[13] == arr_port:
-                    potential_arr.append(row)
-                    self.arr_port = (float(row[4]), float(row[5]))
-            # if len(potential_arr) > 1:
-            #     for each in potential_arr:
-            #         if each[8] == 'AU':
-            #             self.arr_port = (float(each[4]), float(each[5]))
-            #             break
-            # if len(potential_dep) > 1:
-            #     for each in potential_dep:
-            #         if each[8] == 'AU':
-            #             self.dep_port = (float(each[4]), float(each[5]))
-            #             break
+        self.dep_port = thedict[dep_port]
+        self.arr_port = thedict[arr_port]
         if debug:
             print(dep_port)
             print(arr_port)
@@ -67,7 +48,7 @@ class Aircraft:
 
 
 if __name__ == "__main__":
-    ac = Aircraft('YBBN', 'YSSY', 1587711600, 1587717300)
+    ac = Aircraft('BNE', 'SYD', 1587711600, 1587717300)
     simulated_time = 1587711600
     while simulated_time < 1587717300:
         ac.update_position(simulated_time)

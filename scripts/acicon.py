@@ -11,7 +11,6 @@ class AcIcon(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
 
-
 if __name__ == "__main__":
     icon = AcIcon()
     print(icon.rect)
