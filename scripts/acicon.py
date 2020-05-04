@@ -3,16 +3,16 @@ import time
 
 
 class AcIcon(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, color):
         super().__init__()
         self.image = pygame.Surface([5, 5])
-        self.image.fill((0, 0, 255))
-        pygame.draw.circle(self.image, (255, 0, 0), (3, 3), 3)
+        # self.image.fill((0, 0, 255))
+        pygame.draw.circle(self.image, color, (3, 3), 3)
         self.rect = self.image.get_rect()
 
 
 if __name__ == "__main__":
-    icon = AcIcon()
+    icon = AcIcon((0, 255, 0))
     print(icon.rect)
     mapcanvas = pygame.display.set_mode((400, 300))
     mapcanvas.fill((255, 255, 255))

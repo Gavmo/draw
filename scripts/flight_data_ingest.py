@@ -28,7 +28,8 @@ class FlightData:
                                         row[7],
                                         row[3].value // 10 ** 9,
                                         row[4].value // 10 ** 9,
-                                        debug=False)
+                                        debug=False,
+                                        flight_type_code="P")
                                )
             if self.flex_start == 0:
                 self.flex_start = row[3].value // 10 ** 9

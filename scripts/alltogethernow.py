@@ -18,10 +18,10 @@ if __name__ == "__main__":
     print("Importing map")
     gisdata = map.import_coords(r'..//GIS/aus10cgd_r.mif')
     bounds = ((-2, 105), (-40, 165))
-    print("Spawnning aircraft")
-    dot = AcIcon()
+    # print("Spawning aircraft")
+    # dot = AcIcon()
     # eb = EventBox('../event_data/events.csv', (10000, 80))
-    print("importing Flight Data")
+    print("Importing Flight Data")
     # flight_data = FlightData('../flight_data/this_year.csv')
     # flight_data = FlightData('../flight_data/last_year.csv')
     flight_data = FlightData('../flight_data/a_years_worth.csv', fromdate='09/03/2020')
@@ -67,7 +67,12 @@ if __name__ == "__main__":
         iq_rem_rect.center = (100, 120)
         for each in itemqueue:
             if each.active:
-                base.mapcanvas.blit(dot.image, map.dms_to_pix(reverse_tuple(each.position), map.window_size, bounds))
+                base.mapcanvas.blit(each.icon.image,
+                                    map.dms_to_pix(reverse_tuple(each.position),
+                                                   map.window_size,
+                                                   bounds
+                                                   )
+                                    )
             each.update_position(simulated_time)
             if each.is_finished(simulated_time):
                 cleanup.append(itemqueue.pop(itemqueue.index(each)))

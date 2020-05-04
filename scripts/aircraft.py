@@ -1,6 +1,7 @@
 import time
 import datetime
 import csv
+from acicon import AcIcon
 
 with open('../apdata/airports.csv', 'r', encoding='utf-8') as airport_raw:
     airport_csv = csv.reader(airport_raw)
@@ -11,13 +12,26 @@ with open('../apdata/airports.csv', 'r', encoding='utf-8') as airport_raw:
 
 
 class Aircraft:
-    def __init__(self, dep_port, arr_port, dep_datetime, arr_datetime, debug=False):
+    COLOR_TABLE = {
+        "J": (255, 0, 0),  # Red
+        "P": (0, 255, 0)   # Green
+    }
+
+    def __init__(self, dep_port, arr_port, dep_datetime, arr_datetime, debug=False, flight_type_code=None):
         self.position = (0, 0)
         self.dep_datetime = dep_datetime
         self.arr_datetime = arr_datetime
         self.active = False
         self.dep_port = thedict[dep_port]
         self.arr_port = thedict[arr_port]
+        if flight_type_code is None:
+            self.icon = AcIcon(Aircraft.COLOR_TABLE["J"])
+        else:
+            try:
+                self.icon = AcIcon(Aircraft.COLOR_TABLE[flight_type_code])
+            except KeyError as e:
+                print(f'Flight Type code "{e}" does not exist.')
+                self.icon = AcIcon(Aircraft.COLOR_TABLE["J"])
         if debug:
             print(dep_port)
             print(arr_port)
@@ -61,7 +75,7 @@ class Aircraft:
 
 
 if __name__ == "__main__":
-    ac = Aircraft('BNE', 'SYD', 1587711600, 1587717300)
+    ac = Aircraft('BNE', 'SYD', 1587711600, 1587717300, flight_type_code="P")
     simulated_time = 1587711600
     while simulated_time < 1587717300:
         ac.update_position(simulated_time)
