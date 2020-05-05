@@ -29,7 +29,7 @@ class FlightData:
                                         row[3].value // 10 ** 9,
                                         row[4].value // 10 ** 9,
                                         debug=False,
-                                        flight_type_code="P")
+                                        flight_type_code=row[9])
                                )
             if self.flex_start == 0:
                 self.flex_start = row[3].value // 10 ** 9
@@ -42,7 +42,7 @@ class FlightData:
 
 
 if __name__ == "__main__":
-    a = FlightData('../flight_data/a_years_worth.csv')
+    a = FlightData('../flight_data/may-flight-data.csv')
     print(len(a.aclist))
     # for each in a.aclist:
     #     print(each.arr_datetime)

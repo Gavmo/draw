@@ -13,8 +13,10 @@ with open('../apdata/airports.csv', 'r', encoding='utf-8') as airport_raw:
 
 class Aircraft:
     COLOR_TABLE = {
-        "J": (255, 0, 0),  # Red
-        "P": (0, 255, 0)   # Green
+        "J": (255, 0, 0),  # Red - Regular Passenger
+        "P": (0, 255, 0),   # Green - Ferry Flight
+        "F": (0, 0, 255),    # Blue - Freight
+        "C": (255, 215, 0)  # Orange - Charter Passenger
     }
 
     def __init__(self, dep_port, arr_port, dep_datetime, arr_datetime, debug=False, flight_type_code=None):

@@ -24,7 +24,7 @@ if __name__ == "__main__":
     print("Importing Flight Data")
     # flight_data = FlightData('../flight_data/this_year.csv')
     # flight_data = FlightData('../flight_data/last_year.csv')
-    flight_data = FlightData('../flight_data/a_years_worth.csv', fromdate='09/03/2020')
+    flight_data = FlightData('../flight_data/may-flight-data.csv')
     aclist = flight_data.aclist
     print("Drawing Map")
     base = map.OzMap([gisdata[1][34], gisdata[1][194]], bounds)
