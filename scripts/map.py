@@ -60,13 +60,13 @@ class OzMap:
 
     def __init__(self, outline, boundings):
         pygame.init()
-
         self.mapcanvas = pygame.display.set_mode((800, 600))
         self.mapcanvas.fill((255, 255, 255))
         pygame.display.update()
         pygame.display.set_caption("BORK BORK BORK")
         # sleep(1)
         self.mapcanvas.fill((0, 0, 0))
+        self.mapsurface = pygame.surface.Surface((800, 600))
         pygame.display.update()
         # sleep(1)
         self.drawoz(outline, boundings)
@@ -77,9 +77,12 @@ class OzMap:
             for point in range(0, len(ranges)):
                 from_point = dms_to_pix(ranges[point], window_size, bounds)
                 to_point = dms_to_pix(ranges[point - 1], window_size, bounds)
-                pygame.draw.line(self.mapcanvas, pen, from_point, to_point, 1)
-        pygame.display.update()
-        # sleep(1)
+                pygame.draw.line(self.mapsurface, pen, from_point, to_point, 1)
+
+    def blitoz(self):
+        self.mapcanvas.blit(self.mapsurface, (0, 0))
+        self.draw_change()
+        # sleep(3)
 
     def draw_change(self):
         pygame.display.update()
@@ -95,7 +98,9 @@ if __name__ == "__main__":
     # print(len(gisdata[1]))
     # print(dms_to_pix((-27, 153), window_size, ((-2, 105), (-40, 165))))
     print(len(gisdata[1][34]) + len(gisdata[1][194]))
+    a = OzMap([gisdata[1][34], gisdata[1][194]], ((-2, 105), (-40, 165)))
     while True:
-        OzMap([gisdata[1][34], gisdata[1][194]], ((-2, 105), (-40, 165)))
+        a.blitoz()
+
 
     # draw(gisdata[1], ((-2, 105), (-40, 165)))
