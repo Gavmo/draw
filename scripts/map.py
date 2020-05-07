@@ -60,13 +60,13 @@ class OzMap:
 
     def __init__(self, outline, boundings):
         pygame.init()
-        self.mapcanvas = pygame.display.set_mode((800, 600))
+        self.mapcanvas = pygame.display.set_mode(window_size)
         self.mapcanvas.fill((255, 255, 255))
         pygame.display.update()
-        pygame.display.set_caption("BORK BORK BORK")
+        pygame.display.set_caption("Flight Tracing")
         # sleep(1)
         self.mapcanvas.fill((0, 0, 0))
-        self.mapsurface = pygame.surface.Surface((800, 600))
+        self.mapsurface = pygame.surface.Surface(window_size)
         pygame.display.update()
         # sleep(1)
         self.drawoz(outline, boundings)
